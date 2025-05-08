@@ -1,0 +1,123 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Peluquería Glamour</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Peluquería Glamour</h1>
+    <nav>
+      <ul>
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#sobremi">Sobre mí</a></li>
+        <li><a href="#galeria">Galería</a></li>
+        <li><a href="#ubicacion">Ubicación</a></li>
+        <li><a href="#reservas">Reservas</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section id="inicio">
+    <h2>Bienvenidos a Peluquería Glamour</h2>
+    <p>Tu estilo, tu esencia. Con más de 10 años de experiencia creando looks únicos para cada cliente.</p>
+  </section>
+
+  <section id="sobremi">
+    <h2>Sobre mí</h2>
+    <p>Me llamo Laura y soy estilista profesional. Me especializo en cortes modernos, coloración y peinados para eventos especiales.</p>
+  </section>
+
+  <section id="galeria">
+    <h2>Ejemplos de trabajos</h2>
+    <div class="galeria">
+      <img src="https://via.placeholder.com/150" alt="Ejemplo 1">
+      <img src="https://via.placeholder.com/150" alt="Ejemplo 2">
+      <img src="https://via.placeholder.com/150" alt="Ejemplo 3">
+    </div>
+  </section>
+
+  <section id="ubicacion">
+    <h2>Ubicación</h2>
+    <p>Nos encontramos en Calle Belleza, 123, Madrid.</p>
+    <iframe src="https://www.google.com/maps?q=madrid&output=embed" width="100%" height="300"></iframe>
+  </section>
+
+  <section id="reservas">
+    <h2>Reservas</h2>
+    <form id="reservaForm">
+      <label for="nombre">Nombre:</label>
+      <input type="text" id="nombre" name="nombre" required />
+
+      <label for="telefono">Teléfono:</label>
+      <input type="tel" id="telefono" name="telefono" required />
+
+      <label for="fecha">Fecha:</label>
+      <input type="date" id="fecha" name="fecha" required />
+
+      <label for="hora">Hora disponible:</label>
+      <select id="hora" name="hora" required>
+        <option value="">Selecciona una hora</option>
+      </select>
+
+      <button type="submit">Reservar cita</button>
+    </form>
+  </section>
+
+  <footer>
+    <p>© 2025 Peluquería Glamour - Todos los derechos reservados</p>
+  </footer>
+
+  <script>
+    const selectHora = document.getElementById("hora");
+
+    async function cargarHorasDisponibles(fechaSeleccionada) {
+      const response = await fetch("/api/reservas");
+      const reservas = await response.json();
+
+      const todasLasHoras = ["10:00", "11:00", "12:00", "16:00", "17:00", "18:00"];
+      const horasOcupadas = reservas
+        .filter(r => r.fecha === fechaSeleccionada)
+        .map(r => r.hora);
+
+      selectHora.innerHTML = '<option value="">Selecciona una hora</option>';
+      todasLasHoras.forEach(hora => {
+        if (!horasOcupadas.includes(hora)) {
+          const option = document.createElement("option");
+          option.value = hora;
+          option.textContent = hora;
+          selectHora.appendChild(option);
+        }
+      });
+    }
+
+    document.getElementById("fecha").addEventListener("change", function () {
+      cargarHorasDisponibles(this.value);
+    });
+
+    document.getElementById("reservaForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const nombre = document.getElementById("nombre").value;
+      const telefono = document.getElementById("telefono").value;
+      const fecha = document.getElementById("fecha").value;
+      const hora = document.getElementById("hora").value;
+
+      const res = await fetch("/api/reservas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre, telefono, fecha, hora })
+      });
+
+      if (res.status === 409) {
+        alert("¡Esa hora ya está reservada!");
+      } else {
+        alert("¡Reserva realizada con éxito!");
+        cargarHorasDisponibles(fecha);
+      }
+    });
+  </script>
+</body>
+</html>
