@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Galería - Peluquería Glamour</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <div class="logo">Peluquería Glamour</div>
+    <button class="menu-toggle" aria-label="Abrir menú">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="nav-links">
+      <ul>
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="sobremi.html">Sobre mí</a></li>
+        <li><a href="galeria.html">Galería</a></li>
+        <li><a href="ubicacion.html">Ubicación</a></li>
+        <li><a href="reservas.html">Reservas</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <h2>Galería de trabajos</h2>
+      <div class="galeria">
+        <img src="https://via.placeholder.com/300" alt="Ejemplo 1">
+        <img src="https://via.placeholder.com/300" alt="Ejemplo 2">
+        <img src="https://via.placeholder.com/300" alt="Ejemplo 3">
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Peluquería Glamour - Todos los derechos reservados</p>
+  </footer>
+
+  <script>
+    const toggle = document.querySelector(".menu-toggle");
+    const nav = document.querySelector(".nav-links");
+    toggle.addEventListener("click", () => {
+      nav.classList.toggle("open");
+    });
+  </script>
+</body>
+</html>

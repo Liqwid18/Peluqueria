@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reservas - Peluquería Glamour</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <div class="logo">Peluquería Glamour</div>
+    <button class="menu-toggle" aria-label="Abrir menú">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="nav-links">
+      <ul>
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="sobremi.html">Sobre mí</a></li>
+        <li><a href="galeria.html">Galería</a></li>
+        <li><a href="ubicacion.html">Ubicación</a></li>
+        <li><a href="reservas.html">Reservas</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section id="inicio">
+    <h2>Bienvenidos a Peluquería Glamour</h2>
+    <p>Tu estilo, tu esencia. Con más de 10 años de experiencia creando looks únicos para cada cliente.</p>
+  </section>
+
+  <footer>
+    <p>© 2025 Peluquería Glamour - Todos los derechos reservados</p>
+  </footer>
+
+  <script>
+    const selectHora = document.getElementById("hora");
+
+    async function cargarHorasDisponibles(fechaSeleccionada) {
+      const response = await fetch("/api/reservas");
+      const reservas = await response.json();
+
+      const todasLasHoras = ["10:00", "11:00", "12:00", "16:00", "17:00", "18:00"];
+      const horasOcupadas = reservas
+        .filter(r => r.fecha === fechaSeleccionada)
+        .map(r => r.hora);
+
+      selectHora.innerHTML = '<option value="">Selecciona una hora</option>';
+      todasLasHoras.forEach(hora => {
+        if (!horasOcupadas.includes(hora)) {
+          const option = document.createElement("option");
+          option.value = hora;
+          option.textContent = hora;
+          selectHora.appendChild(option);
+        }
+      });
+    }
+
+    document.getElementById("fecha").addEventListener("change", function () {
+      cargarHorasDisponibles(this.value);
+    });
+
+    document.getElementById("reservaForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const nombre = document.getElementById("nombre").value;
+      const telefono = document.getElementById("telefono").value;
+      const fecha = document.getElementById("fecha").value;
+      const hora = document.getElementById("hora").value;
+
+      const res = await fetch("/api/reservas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre, telefono, fecha, hora })
+      });
+
+      if (res.status === 409) {
+        alert("¡Esa hora ya está reservada!");
+      } else {
+        alert("¡Reserva realizada con éxito!");
+        cargarHorasDisponibles(fecha);
+      }
+    });
+  </script>
+</body>
+</html>
